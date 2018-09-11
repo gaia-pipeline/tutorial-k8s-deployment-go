@@ -37,6 +37,16 @@ var (
 // GetSecretsFromVault retrieves all information and credentials
 // from vault and saves it to local space.
 func GetSecretsFromVault(args sdk.Arguments) error {
+	// Get vault credentials
+	for _, arg := range args {
+		switch arg.Key {
+		case "vault-token":
+			vaultToken = arg.Value
+		case "vault-address":
+			vaultAddress = arg.Value
+		}
+	}
+
 	// Create new Vault client instance
 	vaultClient, err := vaultapi.NewClient(vaultapi.DefaultConfig())
 	if err != nil {
@@ -110,8 +120,6 @@ func PrepareDeployment(args sdk.Arguments) error {
 		switch arg.Key {
 		case "vault-address":
 			vaultAddress = arg.Value
-		case "vault-token":
-			vaultToken = arg.Value
 		case "image-name":
 			imageName = arg.Value
 		case "replicas":
@@ -277,12 +285,6 @@ func main() {
 			Handler:     GetSecretsFromVault,
 			Title:       "Get secrets",
 			Description: "Get secrets from vault",
-		},
-		sdk.Job{
-			Handler:     PrepareDeployment,
-			Title:       "Prepare Deployment",
-			Description: "Prepares the deployment (caches manual input and prepares kubernetes connection)",
-			DependsOn:   []string{"Get secrets"},
 			Args: sdk.Arguments{
 				sdk.Argument{
 					Type: sdk.VaultInp,
@@ -292,6 +294,14 @@ func main() {
 					Type: sdk.VaultInp,
 					Key:  "vault-address",
 				},
+			},
+		},
+		sdk.Job{
+			Handler:     PrepareDeployment,
+			Title:       "Prepare Deployment",
+			Description: "Prepares the deployment (caches manual input and prepares kubernetes connection)",
+			DependsOn:   []string{"Get secrets"},
+			Args: sdk.Arguments{
 				sdk.Argument{
 					Type:        sdk.TextFieldInp,
 					Description: "Application name:",
