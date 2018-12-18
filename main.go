@@ -35,7 +35,7 @@ var (
 )
 
 // GetSecretsFromVault retrieves all information and credentials
-// from vault and saves it to local space.
+// from vault and stores it in cache.
 func GetSecretsFromVault(args sdk.Arguments) error {
 	// Get vault credentials
 	for _, arg := range args {
