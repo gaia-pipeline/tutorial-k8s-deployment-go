@@ -9,7 +9,7 @@ import (
 
 	sdk "github.com/gaia-pipeline/gosdk"
 	vaultapi "github.com/hashicorp/vault/api"
-	"k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 	"k8s.io/api/extensions/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -148,7 +148,7 @@ func CreateNamespace(args sdk.Arguments) error {
 	}
 
 	// Lookup if namespace already exists
-	nsClient := clientSet.Core().Namespaces()
+	nsClient := clientSet.CoreV1().Namespaces()
 	_, err := nsClient.Get(appName, metav1.GetOptions{})
 
 	// namespace exists
@@ -158,7 +158,7 @@ func CreateNamespace(args sdk.Arguments) error {
 	}
 
 	// Create namespace
-	_, err = clientSet.Core().Namespaces().Create(ns)
+	_, err = clientSet.CoreV1().Namespaces().Create(ns)
 	if err != nil {
 		return err
 	}
@@ -253,7 +253,7 @@ func CreateService(args sdk.Arguments) error {
 	}
 
 	// Lookup for existing service
-	serviceClient := clientSet.Core().Services(appName)
+	serviceClient := clientSet.CoreV1().Services(appName)
 	currService, err := serviceClient.Get(appName, metav1.GetOptions{})
 
 	// Service already exists
